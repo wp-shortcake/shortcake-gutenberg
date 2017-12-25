@@ -1,0 +1,27 @@
+.shortcode-ui-block-inspector-form {
+	&-item {
+		padding: 0 0 10px;
+
+		&-label, &-description, &-input {
+			display: block;
+			width: 100%;
+		}
+
+		&-label {
+			font-weight: 600;
+			line-height: 1.4;
+			padding: 3px 0;
+		}
+
+		&-description {
+			font-style: italic;
+			color: #999;
+			padding: 3px 0;
+		}
+
+		&:not(:last-child) {
+			border-bottom: 1px solid #ccc;
+			margin-bottom: 10px;
+		}
+	}
+}
