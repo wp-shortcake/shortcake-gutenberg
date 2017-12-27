@@ -1,6 +1,0 @@
-{
-  "http://0.0.0.0:3000/main.js": "http://0.0.0.0:3000/static/js/bundle.js",
-  "http://0.0.0.0:3000/main.js.map": "http://0.0.0.0:3000/static/js/bundle.js.map",
-  "http://0.0.0.0:3000/static/media/shortcode-ui-gutenberg-editor.scss": "http://0.0.0.0:3000/static/media/shortcode-ui-gutenberg-editor.1aa760c2.scss",
-  "http://0.0.0.0:3000/static/media/shortcode-ui-gutenberg-styles.scss": "http://0.0.0.0:3000/static/media/shortcode-ui-gutenberg-styles.a19b7de0.scss"
-}
