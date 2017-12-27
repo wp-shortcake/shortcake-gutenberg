@@ -11,18 +11,15 @@ const { Component } = wp.element;
 class EditBlock extends Component {
 
 	/**
-	 * Construct a component.
-	 *
 	 * Note that this constructor is bound when it's initially called in the
-	 * registerBlockType() method. This is done in order to pass the shortcode
-	 * definition in to the class.
+	 * registerBlockType() method. This is done in order to pass in the shortcode
+	 * definition, so it can be accessed here without being exposed in the props.
 	 *
-	 * @param {Object} shortcode shortcode UI args as defined through the Shortcake API.
-	 * @param {React}props
+	 * @param {Object}                shortcode Shortcode UI args as defined through the Shortcake API.
+	 * @param {React.Component.Props} props     Component props.
 	 */
 	constructor( shortcode, ...args ) {
 		super( ...args );
-		console.log( args );
 
 		this.shortcode = shortcode;
 		this.state = { content: '', preview: '' };
