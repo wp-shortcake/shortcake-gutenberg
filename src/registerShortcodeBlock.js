@@ -1,12 +1,10 @@
-/* global wp: false, shortcodeUIData: false */
-import React from 'react';
+/* global wp: false */
 
-import getBlockAttributesForShortcode from './utils/getBlockAttributesForShortcode';
-import renderTextField from './utils/renderTextField';
 import mapItemImage from './utils/mapItemImage';
-import updateContentString from './utils/updateContentString';
 
-const { registerBlockType, createBlock } = wp.blocks;
+import EditBlock from './EditBlock';
+
+const { registerBlockType } = wp.blocks;
 
 /**
  * Register a Gutenberg block for a shortcode with UI.
@@ -14,11 +12,8 @@ const { registerBlockType, createBlock } = wp.blocks;
  * @param {Object} Shortcode UI as registered with Shortcake
  */
 const registerShortcodeBlock = function( shortcode ) {
-	const { InspectorControls, BlockDescription, Editable } = wp.blocks;
-	const { shortcode_tag, listItemImage, label } = shortcode;
-	const attributes = getBlockAttributesForShortcode( shortcode );
 
-	console.log( 'attributes', shortcode_tag, attributes );
+	const { shortcode_tag, attrs, listItemImage, label } = shortcode;
 
 	registerBlockType( `shortcake/${shortcode_tag}`,
 		{
@@ -26,88 +21,32 @@ const registerShortcodeBlock = function( shortcode ) {
 
 			icon: mapItemImage( listItemImage ),
 
-			category: 'common', // todo: register new "Post Element" category
+			category: 'widgets', // todo: register new "Post Element" category
 
-			shortcode_tag,
+			attributes: attrs.reduce(
+				( memo, item ) => {
 
-			attributes,
+					// TODO: enable different types depending on attribute type
+					memo[ item.attr ] = {
+						type: 'string',
+						default: '',
+					};
 
-			supportHTML: false,
+					return memo;
+				 }, {}
+			),
 
 			supports: {
-				customClassName: false,
-				className: false
+				className:        false,
+				customClassName:  false,
+				html:             false,
 			},
 
-			componentWillReceiveProps( nextProps ) {
-				const postID = window._wpGutenbergPost.id;
+			edit: EditBlock.bind( null, shortcode ),
 
-				//var request = fetcher.queueToFetch({
-					//post_id: postID,
-					//shortcode: this.props.attributes.content,
-					//nonce: shortcodeUIData.nonces.preview,
-				//});
-
-				// If it returns a shortcode preview, render it. Otherwise, we'll just show text.
-				//request.then(
-					//function( response ) {
-
-					//}
-				//).catch(
-					//function( error ) {
-
-					//}
-				//);
-			},
-
-			edit( props ) {
-
-				const { focus, setFocus, attributes, hasPreview } = props;
-				const { content } = attributes;
-
-				console.log( 'on edit', props );
-
-				return [
-					hasPreview ?
-
-						// The shortcode preview (if it's been fetched properly).
-						(
-							<iframe className="shortcode-preview">
-								<html>
-									<body dangerouslySetInnerHTML={{ __html: hasPreview }} />
-								</html>
-							</iframe>
-						) :
-
-						// Or the preformatted shortcode text if no preview is available.
-						(
-							<code onFocus={ setFocus }>
-								{ content }
-							</code>
-						),
-
-					// Render inspector controls when block is focused.
-					focus && [
-						<InspectorControls>
-							<BlockDescription>
-								<h4 className="shortcode-ui-inspector-controls-title">Edit {label} post element</h4>
-								<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
-							</BlockDescription>
-							<form className="shortcode-ui-block-inspector">
-								{ attributes.map( renderTextField ) }
-							</form>
-						</InspectorControls>
-					]
-				];
-			},
-
-			save( props ) {
-				const { content } = props.attributes;
-
-				return content.length ?
-					( <Editable tagName="div">{ content }</Editable> ) :
-					'Shortcode preview not available';
-			},
+			save( { attributes } ) {
+				return wp.shortcode.string( { tag: shortcode_tag, attrs: attributes } );
+			}
 		}
 	);
 };

@@ -3,6 +3,7 @@
 namespace Shortcode_UI\Gutenberg;
 
 use Shortcode_UI;
+use ReactWPScripts;
 
 /**
  * Register blocks for all shortcodes.
@@ -36,25 +37,26 @@ function enqueue_block_editor_assets() {
 		return;
 	}
 
-	wp_enqueue_script(
-		'shortcode-ui-gutenberg',
-		$plugin_url  . '/js/build/shortcode-ui-gutenberg.js',
-		[ 'wp-blocks', 'wp-element' ]
-	);
-
 	usort( $shortcodes, function( $a, $b ) { return $a['label'] <=> $b['label']; } );
+
+	/*
+	 * Enqueue script, styles, and ensure any dependencies are available.
+	 *
+	 * See README at https://github.com/humanmade/react-wp-scripts for explanation.
+	 */
+	ReactWPScripts\enqueue_assets(
+		plugin_dir_path( dirname( __FILE__ ) ), [
+			'handle'  => 'shortcode-ui-gutenberg',
+			'scripts' => [ 'wp-blocks', 'wp-element' ],
+			'styles'  => [ 'wp-blocks' ],
+		]
+	);
 
 	wp_localize_script( 'shortcode-ui-gutenberg', ' shortcodeUIData', array(
 		'shortcodes' => $shortcodes,
 		'strings'    => [], /* to come */
 		'nonces'     => [], /* to come, if needed */
 	) );
-
-	wp_enqueue_style(
-		'shortcode-ui-gutenberg',
-		$plugin_url . '/css/shortcode-ui-gutenberg-styles.css',
-		[ 'wp-blocks' ]
-	);
 }
 
 /**

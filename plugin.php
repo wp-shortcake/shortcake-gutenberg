@@ -2,14 +2,12 @@
 /**
  * A Gutenberg block shim for shortcodes that have UI registered with the Shortcake API.
  *
- * @package   alfie
- * @link      https://github.com/humanmade/wp-alfie
- * @author    Human Made <hello@humanmade.com>
- * @copyright 2009-2017 Human Made
+ * @package   shortcake-gutenberg
+ * @link      https://github.com/wp-shortcake/shortcake-gutenberg
  * @license   GPL v2 or later
  *
  * Plugin Name:     Shortcake Gutenberg Shim
- * Plugin URI:      PLUGIN SITE HERE
+ * Plugin URI:      https://github.com/wp-shortcake/shortcake-gutenberg
  * Description:     Adds a shim to register Gutenberg blocks for any shortcodes with UI registered through Shortcake.
  * Author:          goldenapples
  * Text Domain:     shortcake-gutenberg
@@ -30,6 +28,10 @@ namespace Shortcode_UI\Gutenberg;
 
 const PLUGIN_VERSION = '0.1.0';
 
+// Use the loader from React-WP-Scripts.
+require_once( __DIR__ . '/loader.php' );
+
+// Require plugin files.
 require_once( __DIR__ . '/inc/namespace.php' );
 
 // Kick everything off!
