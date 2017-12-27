@@ -73,7 +73,8 @@ class EditBlock extends Component {
 		// Then, encode the preview as a data URL to display
 		const preview = 'data:text/html,' + encodeURI( content );
 
-		this.setState({ preview });
+		// Disabled for now, because the iframe preview requires an overlay in order to properly set focus.
+		// this.setState({ preview });
 	}
 
 	render() {
@@ -136,6 +137,7 @@ class EditBlock extends Component {
 					type='text'
 					name={ attr }
 					value={ value }
+					onInput={ e => setAttributes({ [ attr ] : e.target.value }) }
 					onChange={ e => setAttributes({ [ attr ] : e.target.value }) }
 					/>
 				{ description.length && (
