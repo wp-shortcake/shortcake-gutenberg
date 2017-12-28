@@ -48,14 +48,17 @@ function enqueue_block_editor_assets() {
 		plugin_dir_path( dirname( __FILE__ ) ), [
 			'handle'  => 'shortcode-ui-gutenberg',
 			'scripts' => [ 'wp-blocks', 'wp-element' ],
-			'styles'  => [ 'wp-blocks' ],
+			'styles'  => [],
 		]
 	);
 
-	wp_localize_script( 'shortcode-ui-gutenberg', ' shortcodeUIData', array(
+	wp_localize_script( 'shortcode-ui-gutenberg', 'shortcodeUIData', array(
 		'shortcodes' => $shortcodes,
 		'strings'    => [], /* to come */
-		'nonces'     => [], /* to come, if needed */
+		'nonces'     => [
+			'preview'        => wp_create_nonce( 'shortcode-ui-preview' ),
+			'thumbnailImage' => wp_create_nonce( 'shortcode-ui-get-thumbnail-image' ),
+		],
 	) );
 }
 

@@ -1,5 +1,9 @@
-/* global wp: false, _: false */
+/* global wp: false, _wpGutenbergPost: false, shortcodeUIData: false, _: false */
 import React from 'react';
+
+import Fetcher from './utils/Fetcher';
+
+import './EditBlock.css'
 
 const { InspectorControls, BlockDescription } = wp.blocks;
 const { Component } = wp.element;
@@ -27,7 +31,7 @@ class EditBlock extends Component {
 
 		this.updateContentString = this.updateContentString.bind( this );
 		this.updatePreview = this.updatePreview.bind( this );
-		this.maybeUpdatePreview = _.throttle( this.updatePreview, 500 );
+		this.maybeUpdatePreview = _.throttle( this.updatePreview, 300 );
 	}
 
 	componentWillMount( props ) {
@@ -60,31 +64,42 @@ class EditBlock extends Component {
 	/**
 	 * Fetch a new preview in response to a change in shortcode attributes.
 	 *
-	 * XXX: todo
+	 * Calls the Fetcher class to fetch previews for any blocks which haven't been fetched yet.
 	 */
 	updatePreview() {
 		const { content } = this.state;
+		const { id: post_id } = _wpGutenbergPost;
+		const { preview: nonce } = shortcodeUIData.nonces;
 
-		// ... todo: fetch preview
+		if ( ! content ) {
+			return;
+		}
 
-		// Then, encode the preview as a data URL to display
-		const preview = 'data:text/html,' + encodeURI( content );
+		const fetchPreview = Fetcher.queueToFetch({
+			post_id,
+			nonce,
+			shortcode: content,
+		});
 
-		// Disabled for now, because the iframe preview requires an overlay in order to properly set focus.
-		// this.setState({ preview });
+		fetchPreview
+			.then( result => this.setState( { html: result.response } ) )
+			.fail( console.log );
 	}
 
 	render() {
+		const { SandBox } = wp.components;
 		const { focus, setFocus } = this.props;
-		const { content = '', preview = false } = this.state;
-		const { attrs, label } = this.shortcode;
+		const { content = '', html = false } = this.state;
+		const { attrs, label, shortcode_tag } = this.shortcode;
 
 		return [
-			preview ?
+			html ?
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
-					<iframe title="Preview of shortcode" className="shortcode-preview" onFocus={ setFocus } src={ preview } ></iframe>
+					<div className="wp-block-shortcake__preview" >
+						<SandBox html={ html } title={ `${label} shortcode preview`  }type={ shortcode_tag } />
+					</div>
 				) :
 
 				// Or the preformatted shortcode text if no preview is available.
