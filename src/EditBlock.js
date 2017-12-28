@@ -97,8 +97,9 @@ class EditBlock extends Component {
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
-					<div className="wp-block-shortcake__preview" >
+					<div className="wp-block-shortcake-preview" >
 						<SandBox html={ html } title={ `${label} shortcode preview`  }type={ shortcode_tag } />
+						<div class="wp-block-shortcake-preview-overlay" onClick={ setFocus } onFocus={ setFocus } ></div>
 					</div>
 				) :
 

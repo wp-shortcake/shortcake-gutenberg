@@ -3,7 +3,7 @@
 	width: 100%;
 }
 
-.shortcake-preview-overlay {
+.wp-block-shortcake-preview-overlay {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -39,3 +39,5 @@
 	border-bottom: 1px solid #ccc;
 	margin-bottom: 10px;
 }
+
+
