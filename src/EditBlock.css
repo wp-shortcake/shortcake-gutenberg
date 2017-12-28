@@ -1,6 +1,5 @@
 .wp-block-shortcake-preview {
-	display: inline-block;
-	width: 100%;
+	position: relative;
 }
 
 .wp-block-shortcake-preview-overlay {
