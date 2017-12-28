@@ -1,5 +1,4 @@
 /* global wp: false */
-import React from 'react';
 
 import mapItemImage from './utils/mapItemImage';
 
@@ -46,7 +45,7 @@ const registerShortcodeBlock = function( shortcode ) {
 			edit: EditBlock.bind( null, shortcode ),
 
 			save( { attributes } ) {
-				return <p>{ wp.shortcode.string( { tag: shortcode_tag, attrs: attributes } ) }</p>;
+				return wp.shortcode.string( { tag: shortcode_tag, attrs: attributes } );
 			}
 		}
 	);

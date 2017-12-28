@@ -10,13 +10,24 @@ use ReactWPScripts;
  *
  */
 function bootstrap() {
-	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_block_editor_assets' );
+	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_block_editor_assets' );
 }
 
 /**
  * Register Gutenberg blocks for all shortcodes with UI.
+ *
+ * Note: this function is running on admin_enqueue_scripts, rather than
+ * enqueue_block_assets, because otherwise the blocks weren't registered in
+ * time to parse with the initial page load. TODO: investigate why that is?
+ *
+ * @param string $hook Current page in the WP admin
  */
-function enqueue_block_editor_assets() {
+function enqueue_block_editor_assets( $hook ) {
+
+	if ( ! class_exists( 'WP_Block_Type' ) || ! in_array( $hook, [ 'post.php', 'post-new.php' ] ) ) {
+		return;
+	}
+
 	$Shortcake         = Shortcode_UI::get_instance();
 
 	$plugin_dir        = plugin_dir_path( dirname( __FILE__ ) );
