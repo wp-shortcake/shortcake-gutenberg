@@ -29,13 +29,12 @@ class EditBlock extends Component {
 
 		this.renderTextField = this.renderTextField.bind( this );
 
-		this.updateContentString = this.updateContentString.bind( this );
 		this.updatePreview = this.updatePreview.bind( this );
 		this.maybeUpdatePreview = _.throttle( this.updatePreview, 300 );
 	}
 
 	componentWillMount( props ) {
-		this.updateContentString();
+		this.updatePreview();
 	}
 
 	/**
@@ -43,22 +42,8 @@ class EditBlock extends Component {
 	 */
 	componentWillReceiveProps( nextProps ) {
 		if ( nextProps && nextProps !== this.props ) {
-			this.updateContentString();
+			this.maybeUpdatePreview();
 		}
-	}
-
-	/**
-	 * Update the content string in response to a change in attributes.
-	 */
-	updateContentString() {
-		const { shortcode_tag } = this.shortcode;
-		const { attributes } = this.props;
-		const { shortcode } = wp;
-
-		const content = shortcode.string( { tag: shortcode_tag, attrs: attributes } );
-
-		this.setState({ content });
-		this.maybeUpdatePreview();
 	}
 
 	/**
@@ -67,39 +52,64 @@ class EditBlock extends Component {
 	 * Calls the Fetcher class to fetch previews for any blocks which haven't been fetched yet.
 	 */
 	updatePreview() {
-		const { content } = this.state;
+		const { shortcode_tag } = this.shortcode;
+		const { attributes } = this.props;
 		const { id: post_id } = _wpGutenbergPost;
 		const { preview: nonce } = shortcodeUIData.nonces;
+		const { shortcode } = wp;
 
-		if ( ! content ) {
-			return;
+		const content = shortcode.string( { tag: shortcode_tag, attrs: attributes } );
+
+		if ( content && content !== this.state.content ) {
+
+			// Trigger an unmount on the sandbox component, so that it can be rebuilt.
+			this.setState( { content: '', preview: '' } );
+
+			const fetchPreview = Fetcher.queueToFetch( {
+				post_id,
+				nonce,
+				shortcode: content
+			} );
+
+			// When preview is received, set state and re-render component.
+			fetchPreview
+				.then(
+					result => this.setState( {
+						content,
+						preview: result.response
+					} )
+				)
+				.fail( console.log );
 		}
-
-		const fetchPreview = Fetcher.queueToFetch({
-			post_id,
-			nonce,
-			shortcode: content,
-		});
-
-		fetchPreview
-			.then( result => this.setState( { html: result.response } ) )
-			.fail( console.log );
 	}
 
 	render() {
 		const { SandBox } = wp.components;
-		const { focus, setFocus } = this.props;
-		const { content = '', html = false } = this.state;
+
 		const { attrs, label, shortcode_tag } = this.shortcode;
+		const { focus, setFocus } = this.props;
+		const { content, preview } = this.state;
+
+		const editForm = attrs.map( attr => this.renderTextField( attr ) );
 
 		return [
-			html ?
+			preview ?
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
 					<div className="wp-block-shortcake-preview" >
-						<SandBox html={ html } title={ `${label} shortcode preview`  }type={ shortcode_tag } />
-						<div class="wp-block-shortcake-preview-overlay" onClick={ setFocus } onFocus={ setFocus } ></div>
+						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
+						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) } onClick={ setFocus } onFocus={ setFocus } >
+							{ focus && (
+								<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
+									<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
+									<section className="shortcode-ui-block-editor-content">
+										<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
+										{ editForm }
+									</section>
+								</form>
+							) }
+						</div>
 					</div>
 				) :
 
@@ -118,7 +128,7 @@ class EditBlock extends Component {
 						<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
 					</BlockDescription>
 					<form className="shortcode-ui-block-inspector">
-						{ attrs.map( attr => this.renderTextField( attr ) ) }
+						{ editForm }
 					</form>
 				</InspectorControls>
 			]
@@ -142,7 +152,9 @@ class EditBlock extends Component {
 		const { shortcode_tag } = this.shortcode;
 		const value = attributes[ attr ] || '';
 
-		const updateValue = e => setAttributes( { [ attr ]: e.target.value } );
+		const updateValue = e => {
+			setAttributes( { [ attr ]: e.target.value } );
+		}
 
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
@@ -151,7 +163,6 @@ class EditBlock extends Component {
 					type='text'
 					name={ attr }
 					value={ value }
-					onInput={ updateValue }
 					onChange={ updateValue }
 					/>
 				{ description.length && (

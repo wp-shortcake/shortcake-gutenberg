@@ -47,8 +47,6 @@ class Fetcher {
 			this.timeout = setTimeout( () => this.fetchAll() );
 		}
 
-		console.log( 'queueing to fetch', this, query );
-
 		return promise;
 	};
 
@@ -76,7 +74,6 @@ class Fetcher {
 		});
 
 		request.done( responseData => {
-			console.log( responseData );
 			_.each( responseData,
 				( result, index ) => {
 					var matchedQuery = _.findWhere( this.queries, {

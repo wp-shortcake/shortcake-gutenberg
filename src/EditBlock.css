@@ -2,6 +2,10 @@
 	position: relative;
 }
 
+.wp-block-shortcake-preview iframe {
+	transition: height 200ms ease-out;
+}
+
 .wp-block-shortcake-preview-overlay {
 	display: block;
 	width: 100%;
@@ -9,6 +13,39 @@
 	position: absolute;
 	top: 0;
 	left: 0;
+}
+
+.wp-block-shortcake-preview-overlay.editing {
+	background-color: rgba( 255, 255, 255, 0.9 );
+	border: 2px solid rgba( 0, 0, 0, 0.6 );
+}
+
+.wp-block-shortcode-edit-form {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.shortcode-ui-block-editor-title {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin-top: 0;
+	padding: 3px 20%;
+	background-color: rgba( 0, 0, 0, 0.6 );
+	color: #fff;
+}
+
+.shortcode-ui-block-editor-content {
+	width: 60%;
+	margin-top: 2em;
 }
 
 .shortcode-ui-block-inspector-form-item-label, .shortcode-ui-block-inspector-form-item-description {
