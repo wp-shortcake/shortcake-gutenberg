@@ -2,7 +2,7 @@
 import React from 'react';
 
 import Fetcher from './utils/Fetcher';
-import EditAttributeField from './fields/EditAttributeField';
+import ShortcodeEditForm from './ShortcodeEditForm';
 
 import './EditBlock.css'
 
@@ -26,7 +26,7 @@ class EditBlock extends Component {
 		super( ...args );
 
 		this.shortcode = shortcode;
-		this.state = { content: '', preview: '' };
+		this.state = { content: '', preview: '', minHeight: 0 };
 
 		this.updatePreview = this.updatePreview.bind( this );
 		this.maybeUpdatePreview = _.throttle( this.updatePreview, 300 );
@@ -86,39 +86,36 @@ class EditBlock extends Component {
 		const { SandBox } = wp.components;
 
 		const { attrs, label, shortcode_tag } = this.shortcode;
-		const { attributes, setAttributes, focus, setFocus } = this.props;
+		const { attributes: values, setAttributes, focus, setFocus } = this.props;
 		const { content, preview } = this.state;
 
-		const editForm = attrs.map(
-			attribute => {
-				const { attr } = attribute;
-				const { [ attr ]: value } = attributes;
-				return (
-					<EditAttributeField
-						attribute={ attribute }
-						shortcode={ this.shortcode }
-						value={ value }
-						updateValue={ newValue => setAttributes( { [ attr ]: newValue } ) }
-						/>
-				);
-			}
-		);
+		/*
+		 * Because the form is displayed in an absolutely-positioned overlay,
+		 * the block needs this listener to update it's height when the
+		 * shortcode UI form is rendered or updated. Magic number 112 is equal
+		 * to the form header and description heights, plus all margin and
+		 * padding.
+		 */
+		const onSize = size => this.setState( { minHeight: size.height + 112 } )
 
 		return [
 			preview ?
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
-					<div className="wp-block-shortcake-preview" >
+					<div className="wp-block-shortcake-preview" key="preview" style={ focus && { minHeight: this.state.minHeight } }>
 						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
 						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) } onClick={ setFocus } onFocus={ setFocus } >
 							{ focus && (
 								<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
 									<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
-									<section className="shortcode-ui-block-editor-content">
-										<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
-										{ editForm }
-									</section>
+									<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
+									<ShortcodeEditForm
+										shortcode={ this.shortcode }
+										attrs={ attrs }
+										values={ values }
+										onSize={ onSize }
+										setAttributes={ setAttributes } />
 								</form>
 							) }
 						</div>
@@ -127,20 +124,33 @@ class EditBlock extends Component {
 
 				// Or the preformatted shortcode text if no preview is available.
 				(
-					<code onFocus={ setFocus }>
-						{ content }
-					</code>
+					<div className="wp-block-shortcake-preview" key="content" style={ focus && { minHeight: this.state.minHeight } }>
+						<code onFocus={ setFocus }>
+							{ content }
+						</code>
+						{ focus && (
+							<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
+								<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
+								<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
+								<ShortcodeEditForm
+									shortcode={ this.shortcode }
+									attrs={ attrs }
+									values={ values }
+									onSize={ onSize }
+									setAttributes={ setAttributes } />
+							</form>
+						) }
+					</div>
 				),
 
 			// Render inspector controls when block is focused.
 			focus && [
-				<InspectorControls>
+				<InspectorControls key="advanced-controls">
 					<BlockDescription>
 						<h4 className="shortcode-ui-inspector-controls-title">Edit {label} post element</h4>
 						<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
 					</BlockDescription>
 					<form className="shortcode-ui-block-inspector">
-						{ editForm }
 					</form>
 				</InspectorControls>
 			]

@@ -11,6 +11,10 @@ import React from 'react';
  * @return {String|wp.element}            The slug portion of the dashicon class or a wp.element which renders an image.
  */
 const mapItemImage = shortcodeListItemImage => {
+	if ( ! shortcodeListItemImage ) {
+		return 'marker';
+	}
+
 	if ( shortcodeListItemImage.startsWith( 'dashicons-' ) ) {
 		return shortcodeListItemImage.replace( 'dashicons-', '' );
 	}
