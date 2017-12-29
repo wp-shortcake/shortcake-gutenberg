@@ -2,6 +2,7 @@
 import React from 'react';
 
 import Fetcher from './utils/Fetcher';
+import EditAttributeField from './fields/EditAttributeField';
 
 import './EditBlock.css'
 
@@ -26,8 +27,6 @@ class EditBlock extends Component {
 
 		this.shortcode = shortcode;
 		this.state = { content: '', preview: '' };
-
-		this.renderTextField = this.renderTextField.bind( this );
 
 		this.updatePreview = this.updatePreview.bind( this );
 		this.maybeUpdatePreview = _.throttle( this.updatePreview, 300 );
@@ -87,10 +86,23 @@ class EditBlock extends Component {
 		const { SandBox } = wp.components;
 
 		const { attrs, label, shortcode_tag } = this.shortcode;
-		const { focus, setFocus } = this.props;
+		const { attributes, setAttributes, focus, setFocus } = this.props;
 		const { content, preview } = this.state;
 
-		const editForm = attrs.map( attr => this.renderTextField( attr ) );
+		const editForm = attrs.map(
+			attribute => {
+				const { attr } = attribute;
+				const { [ attr ]: value } = attributes;
+				return (
+					<EditAttributeField
+						attribute={ attribute }
+						shortcode={ this.shortcode }
+						value={ value }
+						updateValue={ newValue => setAttributes( { [ attr ]: newValue } ) }
+						/>
+				);
+			}
+		);
 
 		return [
 			preview ?
@@ -134,43 +146,6 @@ class EditBlock extends Component {
 			]
 		];
 	}
-
-	/**
-	 * Render a text input for an attribute value field.
-	 *
-	 * TODO: This should be moved to a different component so that we
-	 * can define multiple input types. Currently all attribute fields
-	 * are displayed as text inputs, no matter what field type was
-	 * registered for them.
-	 *
-	 * @param  {Object}            attribute  Attribute field as defined in shortcode UI.
-	 * @return {wp.blocks.element}            HTML for section with label, input, and description if available.
-	 */
-	renderTextField( attribute ) {
-		const { attr, label, description } = attribute;
-		const { attributes, setAttributes } = this.props;
-		const { shortcode_tag } = this.shortcode;
-		const value = attributes[ attr ] || '';
-
-		const updateValue = e => {
-			setAttributes( { [ attr ]: e.target.value } );
-		}
-
-		return (
-			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
-				<label className='shortcode-ui-block-inspector-form-item-label'>{ label }</label>
-				<input className='shortcode-ui-block-inspector-form-item-input'
-					type='text'
-					name={ attr }
-					value={ value }
-					onChange={ updateValue }
-					/>
-				{ description.length && (
-					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
-				) }
-			</section>
-		);
-	};
 }
 
 export default EditBlock;
