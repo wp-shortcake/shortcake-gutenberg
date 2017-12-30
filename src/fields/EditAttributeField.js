@@ -61,6 +61,11 @@ export class EmailField extends EditAttributeField {
 	addlAttrs = { type: 'email' };
 };
 
+export class NumberField extends EditAttributeField {
+	static attrType = 'number';
+	addlAttrs = { type: 'number' };
+};
+
 export class DateField extends EditAttributeField {
 	static attrType = 'date';
 	addlAttrs = { type: 'date' };
@@ -138,4 +143,64 @@ export class SelectField extends EditAttributeField {
 			</section>
 		);
 	};
+}
+
+export class CheckboxField extends EditAttributeField {
+	static attrType = 'checkbox';
+
+	render() {
+		const { attribute, shortcode, value, updateValue } = this.props;
+		const { attr, label, description, options, meta = {} } = attribute;
+		const { multiple = false } = meta;
+		const { shortcode_tag } = shortcode;
+
+		const toggleChecked = () => updateValue( ! value );
+
+		return (
+			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
+				<label className='shortcode-ui-block-inspector-form-item-label' >
+					<input type="checkbox" name={ attr } checked={ !! value } onChange={ toggleChecked } />
+					{ label }
+				</label>
+				{ description && description.length && (
+					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
+				) }
+			</section>
+		);
+
+	}
+}
+
+export class RadioField extends EditAttributeField {
+	static attrType = 'radio';
+
+	render() {
+		const { attribute, shortcode, value, updateValue } = this.props;
+		const { attr, label, description, options, meta = {} } = attribute;
+		const { multiple = false } = meta;
+		const { shortcode_tag } = shortcode;
+
+		const updateSelection = (e) => {
+			console.log( e );
+			updateValue( e.target.value );
+		}
+
+		return (
+			<section key={ `shortcode-${shortcode_tag}-${attr}` } className="shortcode-ui-block-inspector-form-item">
+				<label>{ label }</label>
+				{ options.map(
+					option => (
+						<label>
+							<input type="radio" name={ attr } value={ option.value } checked={ option.value == value } onClick={ () => updateValue( option.value ) } />
+							{ option.label }
+						</label>
+					)
+				) }
+				{ description && description.length && (
+					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
+				) }
+			</section>
+		);
+
+	}
 }
