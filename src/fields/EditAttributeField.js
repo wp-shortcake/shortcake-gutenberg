@@ -1,4 +1,4 @@
-/* global wp: false */
+/* global wp: false, _: false */
 
 import React from 'react';
 import TextareaAutosize from 'react-autosize-textarea';
@@ -67,8 +67,8 @@ export class DateField extends EditAttributeField {
 };
 
 export class ColorField extends EditAttributeField {
-	static attrType = 'date';
-	addlAttrs = { type: 'date' };
+	static attrType = 'color';
+	addlAttrs = { type: 'color' };
 };
 
 export class TextArea extends EditAttributeField {
@@ -96,24 +96,42 @@ export class TextArea extends EditAttributeField {
 	};
 }
 
-export class SelectFIeld extends EditAttributeField {
-	//static attrType = 'select';
+export class SelectField extends EditAttributeField {
+	static attrType = 'select';
 
 	render() {
 		const { attribute, shortcode, value, updateValue } = this.props;
-		const { attr, label, description, options, meta } = attribute;
+		const { attr, label, description, options, meta = {} } = attribute;
+		const { multiple = false } = meta;
 		const { shortcode_tag } = shortcode;
 
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
 				<label className='shortcode-ui-block-inspector-form-item-label'>{ label }</label>
-				<Select className='shortcode-ui-block-inspector-form-item-input'
-					{ ...meta }
+				<select
 					name={ attr }
 					value={ value }
-					options={ options }
-					onChange={ updateValue }
-				/>
+					onChange={ ( { target: { value: newValue } } ) => updateValue( newValue ) } >
+					{ options.map(
+						option => {
+							if ( 'options' in option ) {
+								return (
+									<optgroup label={ option.label } key={ option.label } >
+									{ option.options.map(
+										option => (
+											<option key={ option.value } value={ option.value } >{ option.label }</option>
+										)
+									) }
+									</optgroup>
+								);
+							} else {
+								return (
+									<option key={ option.value } value={ option.value } >{ option.label }</option>
+								)
+							}
+						} )
+					}
+				</select>
 				{ description && description.length && (
 					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
 				) }

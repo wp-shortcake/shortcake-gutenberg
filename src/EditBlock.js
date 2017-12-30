@@ -39,11 +39,11 @@ class EditBlock extends Component {
 	/**
 	 * When props update, update the shortcode string and re-fetch the preview.
 	 */
-	componentWillReceiveProps( nextProps ) {
-		if ( nextProps && nextProps !== this.props ) {
-			this.maybeUpdatePreview();
-		}
-	}
+	//componentWillReceiveProps( nextProps ) {
+		//if ( nextProps && nextProps !== this.props ) {
+			//this.maybeUpdatePreview();
+		//}
+	//}
 
 	/**
 	 * Fetch a new preview in response to a change in shortcode attributes.
@@ -105,7 +105,11 @@ class EditBlock extends Component {
 				(
 					<div className="wp-block-shortcake-preview" key="preview" style={ focus && { minHeight: this.state.minHeight } }>
 						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
-						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) } onClick={ setFocus } onFocus={ setFocus } >
+						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) }
+							onClick={ setFocus }
+							onFocus={ setFocus }
+							onBlur={ this.maybeUpdatePreview }
+							>
 							{ focus && (
 								<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
 									<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
@@ -125,7 +129,10 @@ class EditBlock extends Component {
 				// Or the preformatted shortcode text if no preview is available.
 				(
 					<div className="wp-block-shortcake-preview" key="content" style={ focus && { minHeight: this.state.minHeight } }>
-						<code onFocus={ setFocus }>
+						<code
+							onFocus={ setFocus }
+							onBlur={ this.maybeUpdatePreview }
+							>
 							{ content }
 						</code>
 						{ focus && (
