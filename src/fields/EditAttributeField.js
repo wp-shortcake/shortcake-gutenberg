@@ -1,8 +1,7 @@
-/* global wp: false, _: false */
+/* global wp: false */
 
 import React from 'react';
 import TextareaAutosize from 'react-autosize-textarea';
-import Select from 'react-select';
 
 const { Component } = wp.element;
 
@@ -107,7 +106,6 @@ export class SelectField extends EditAttributeField {
 	render() {
 		const { attribute, shortcode, value, updateValue } = this.props;
 		const { attr, label, description, options, meta = {} } = attribute;
-		const { multiple = false } = meta;
 		const { shortcode_tag } = shortcode;
 
 		return (
@@ -116,26 +114,27 @@ export class SelectField extends EditAttributeField {
 				<select
 					name={ attr }
 					value={ value }
-					onChange={ ( { target: { value: newValue } } ) => updateValue( newValue ) } >
-					{ options.map(
-						option => {
-							if ( 'options' in option ) {
-								return (
-									<optgroup label={ option.label } key={ option.label } >
-									{ option.options.map(
-										option => (
-											<option key={ option.value } value={ option.value } >{ option.label }</option>
-										)
-									) }
-									</optgroup>
-								);
-							} else {
-								return (
-									<option key={ option.value } value={ option.value } >{ option.label }</option>
-								)
-							}
-						} )
-					}
+					onChange={ ( { target: { value: newValue } } ) => updateValue( newValue ) }
+					{ ...meta } >
+						{ options.map(
+							option => {
+								if ( 'options' in option ) {
+									return (
+										<optgroup label={ option.label } key={ option.label } >
+										{ option.options.map(
+											option => (
+												<option key={ option.value } value={ option.value } >{ option.label }</option>
+											)
+										) }
+										</optgroup>
+									);
+								} else {
+									return (
+										<option key={ option.value } value={ option.value } >{ option.label }</option>
+									)
+								}
+							} )
+						}
 				</select>
 				{ description && description.length && (
 					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
@@ -150,8 +149,7 @@ export class CheckboxField extends EditAttributeField {
 
 	render() {
 		const { attribute, shortcode, value, updateValue } = this.props;
-		const { attr, label, description, options, meta = {} } = attribute;
-		const { multiple = false } = meta;
+		const { attr, label, description, meta = {} } = attribute;
 		const { shortcode_tag } = shortcode;
 
 		const toggleChecked = () => updateValue( ! value );
@@ -159,7 +157,7 @@ export class CheckboxField extends EditAttributeField {
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
 				<label className='shortcode-ui-block-inspector-form-item-label' >
-					<input type="checkbox" name={ attr } checked={ !! value } onChange={ toggleChecked } />
+					<input type="checkbox" name={ attr } checked={ !! value } onChange={ toggleChecked } { ...meta } />
 					{ label }
 				</label>
 				{ description && description.length && (
@@ -176,26 +174,22 @@ export class RadioField extends EditAttributeField {
 
 	render() {
 		const { attribute, shortcode, value, updateValue } = this.props;
-		const { attr, label, description, options, meta = {} } = attribute;
-		const { multiple = false } = meta;
+		const { attr, label, description, options } = attribute;
 		const { shortcode_tag } = shortcode;
-
-		const updateSelection = (e) => {
-			console.log( e );
-			updateValue( e.target.value );
-		}
 
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className="shortcode-ui-block-inspector-form-item">
-				<label>{ label }</label>
-				{ options.map(
-					option => (
-						<label>
-							<input type="radio" name={ attr } value={ option.value } checked={ option.value == value } onClick={ () => updateValue( option.value ) } />
-							{ option.label }
-						</label>
-					)
-				) }
+				<label class="shortcode-ui-block-inspector-form-item-label">{ label }</label>
+				<div class="shortcode-ui-form-radio-options-wrapper">
+					{ options.map(
+						option => (
+							<label class="shortcode-ui-form-radio-option-label">
+								<input type="radio" name={ attr } value={ option.value } checked={ option.value === value } onClick={ () => updateValue( option.value ) } />
+								{ option.label }
+							</label>
+						)
+					) }
+				</div>
 				{ description && description.length && (
 					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
 				) }

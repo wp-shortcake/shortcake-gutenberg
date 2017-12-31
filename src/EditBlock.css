@@ -74,4 +74,11 @@
 	margin-bottom: 10px;
 }
 
+.shortcode-ui-form-radio-options-wrapper {
+	columns: 100px 4;
+}
 
+.shortcode-ui-form-radio-option-label {
+	display: block;
+	break-inside: avoid;
+}
