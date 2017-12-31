@@ -7,7 +7,6 @@
     "react-autosize-textarea": "^3.0.1",
     "react-dom": "^16.2.0",
     "react-scripts": "1.0.17",
-    "react-select": "^1.1.0",
     "react-sizeme": "^2.3.6",
     "react-wp-scripts": "^0.1.1"
   },
