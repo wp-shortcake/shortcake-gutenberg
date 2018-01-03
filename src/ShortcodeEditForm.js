@@ -4,7 +4,9 @@ import React from 'react';
 
 import sizeMe from 'react-sizeme';
 
-import EditAttributeField, * as fields from './fields/EditAttributeField';
+import EditAttributeField from './fields/EditAttributeField';
+import * as fields from './fields';
+
 
 const { Component } = wp.element;
 

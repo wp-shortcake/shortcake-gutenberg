@@ -70,11 +70,6 @@ export class DateField extends EditAttributeField {
 	addlAttrs = { type: 'date' };
 };
 
-export class ColorField extends EditAttributeField {
-	static attrType = 'color';
-	addlAttrs = { type: 'color' };
-};
-
 export class TextArea extends EditAttributeField {
 	static attrType = 'textarea';
 
@@ -183,7 +178,7 @@ export class RadioField extends EditAttributeField {
 				<div class="shortcode-ui-form-radio-options-wrapper">
 					{ options.map(
 						option => (
-							<label class="shortcode-ui-form-radio-option-label">
+							<label className="shortcode-ui-form-radio-option-label">
 								<input type="radio" name={ attr } value={ option.value } checked={ option.value === value } onClick={ () => updateValue( option.value ) } />
 								{ option.label }
 							</label>
