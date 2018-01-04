@@ -15,7 +15,9 @@ const registerShortcodeBlock = function( shortcode ) {
 
 	const { shortcode_tag, attrs, listItemImage, label } = shortcode;
 
-	registerBlockType( `shortcake/${shortcode_tag}`,
+	const sanitizedBlockName = shortcode_tag.toLowerCase().replace( /[^a-z0-9-]+/g, '-' );
+
+	registerBlockType( `shortcake/${sanitizedBlockName}`,
 		{
 			title: label,
 
