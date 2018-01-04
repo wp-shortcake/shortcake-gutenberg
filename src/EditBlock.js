@@ -39,11 +39,11 @@ class EditBlock extends Component {
 	/**
 	 * When props update, update the shortcode string and re-fetch the preview.
 	 */
-	//componentWillReceiveProps( nextProps ) {
-		//if ( nextProps && nextProps !== this.props ) {
-			//this.maybeUpdatePreview();
-		//}
-	//}
+	componentWillReceiveProps( nextProps ) {
+		if ( nextProps && nextProps !== this.props ) {
+			this.maybeUpdatePreview();
+		}
+	}
 
 	/**
 	 * Fetch a new preview in response to a change in shortcode attributes.
