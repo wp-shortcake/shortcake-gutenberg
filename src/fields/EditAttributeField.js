@@ -193,3 +193,25 @@ export class RadioField extends EditAttributeField {
 
 	}
 }
+
+export class RangeField extends EditAttributeField {
+	static attrType = 'range';
+
+	render() {
+		const { attribute, shortcode, value, updateValue } = this.props;
+		const { attr, label, description, meta = {} } = attribute;
+		const { shortcode_tag } = shortcode;
+
+		return (
+			<section key={ `shortcode-${shortcode_tag}-${attr}` } className="shortcode-ui-block-inspector-form-item">
+				<label class="shortcode-ui-block-inspector-form-item-label">{ label }</label>
+				<div class="shortcode-ui-form-radio-options-wrapper">
+					<input type="range" name={ attr } value={ value} onChange={ () => updateValue( this.value ) } { ...meta } />
+				</div>
+				{ description && description.length && (
+					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
+				) }
+			</section>
+		);
+	}
+}
