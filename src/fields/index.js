@@ -7,7 +7,8 @@ export {
 	TextArea,
 	SelectField,
 	CheckboxField,
-	RadioField
+	RadioField,
+	RangeField
 } from './EditAttributeField';
 
 

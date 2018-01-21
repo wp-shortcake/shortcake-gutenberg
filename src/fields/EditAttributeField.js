@@ -171,15 +171,16 @@ export class RadioField extends EditAttributeField {
 		const { attribute, shortcode, value, updateValue } = this.props;
 		const { attr, label, description, options } = attribute;
 		const { shortcode_tag } = shortcode;
+		const onChange = evt => updateValue( evt.target.value );
 
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className="shortcode-ui-block-inspector-form-item">
-				<label class="shortcode-ui-block-inspector-form-item-label">{ label }</label>
-				<div class="shortcode-ui-form-radio-options-wrapper">
+				<label className="shortcode-ui-block-inspector-form-item-label">{ label }</label>
+				<div className="shortcode-ui-form-radio-options-wrapper">
 					{ options.map(
 						option => (
-							<label className="shortcode-ui-form-radio-option-label">
-								<input type="radio" name={ attr } value={ option.value } checked={ option.value === value } onClick={ () => updateValue( option.value ) } />
+							<label key={ `option-${option.value}` } className="shortcode-ui-form-radio-option-label">
+								<input type="radio" name={ attr } value={ option.value } checked={ option.value === value } onChange={ onChange } />
 								{ option.label }
 							</label>
 						)
@@ -202,11 +203,14 @@ export class RangeField extends EditAttributeField {
 		const { attr, label, description, meta = {} } = attribute;
 		const { shortcode_tag } = shortcode;
 
+		const onChange = evt => updateValue( evt.target.value );
+
 		return (
 			<section key={ `shortcode-${shortcode_tag}-${attr}` } className="shortcode-ui-block-inspector-form-item">
-				<label class="shortcode-ui-block-inspector-form-item-label">{ label }</label>
-				<div class="shortcode-ui-form-radio-options-wrapper">
-					<input type="range" name={ attr } value={ value} onChange={ () => updateValue( this.value ) } { ...meta } />
+				<label className="shortcode-ui-block-inspector-form-item-label">{ label }</label>
+				<div className="shortcode-ui-form-range-field-wrapper">
+					<input className="shortcode-ui-form-range-input" type="range" name={ attr } value={ value } onChange={ onChange } { ...meta } />
+					<span className="shortcode-ui-form-range-label">{ value }</span>
 				</div>
 				{ description && description.length && (
 					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>

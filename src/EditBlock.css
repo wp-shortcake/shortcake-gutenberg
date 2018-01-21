@@ -82,3 +82,17 @@
 	display: block;
 	break-inside: avoid;
 }
+
+.shortcode-ui-form-range-input {
+	max-width: 225px;
+	display: inline-block;
+	margin-right: 12px;
+	vertical-align: middle;
+}
+
+.shortcode-ui-form-range-label {
+	font-size: 12px;
+	line-height: 30px;
+	vertical-align: middle;
+}
+
