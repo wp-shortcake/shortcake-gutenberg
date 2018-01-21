@@ -4,8 +4,11 @@
   "private": true,
   "dependencies": {
     "react": "^16.2.0",
+    "react-autosize-textarea": "^3.0.1",
+    "react-color": "^2.13.8",
     "react-dom": "^16.2.0",
     "react-scripts": "1.0.17",
+    "react-sizeme": "^2.3.6",
     "react-wp-scripts": "^0.1.1"
   },
   "scripts": {

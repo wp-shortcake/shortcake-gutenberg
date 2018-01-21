@@ -2,6 +2,7 @@
 import React from 'react';
 
 import Fetcher from './utils/Fetcher';
+import ShortcodeEditForm from './ShortcodeEditForm';
 
 import './EditBlock.css'
 
@@ -25,9 +26,7 @@ class EditBlock extends Component {
 		super( ...args );
 
 		this.shortcode = shortcode;
-		this.state = { content: '', preview: '' };
-
-		this.renderTextField = this.renderTextField.bind( this );
+		this.state = { content: '', preview: '', minHeight: 0 };
 
 		this.updatePreview = this.updatePreview.bind( this );
 		this.maybeUpdatePreview = _.throttle( this.updatePreview, 300 );
@@ -87,26 +86,40 @@ class EditBlock extends Component {
 		const { SandBox } = wp.components;
 
 		const { attrs, label, shortcode_tag } = this.shortcode;
-		const { focus, setFocus } = this.props;
+		const { attributes: values, setAttributes, focus, setFocus } = this.props;
 		const { content, preview } = this.state;
 
-		const editForm = attrs.map( attr => this.renderTextField( attr ) );
+		/*
+		 * Because the form is displayed in an absolutely-positioned overlay,
+		 * the block needs this listener to update it's height when the
+		 * shortcode UI form is rendered or updated. Magic number 112 is equal
+		 * to the form header and description heights, plus all margin and
+		 * padding.
+		 */
+		const onSize = size => this.setState( { minHeight: size.height + 112 } )
 
 		return [
 			preview ?
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
-					<div className="wp-block-shortcake-preview" >
+					<div className="wp-block-shortcake-preview" key="preview" style={ focus && { minHeight: this.state.minHeight } }>
 						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
-						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) } onClick={ setFocus } onFocus={ setFocus } >
+						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) }
+							onClick={ setFocus }
+							onFocus={ setFocus }
+							onBlur={ this.maybeUpdatePreview }
+							>
 							{ focus && (
 								<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
 									<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
-									<section className="shortcode-ui-block-editor-content">
-										<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
-										{ editForm }
-									</section>
+									<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
+									<ShortcodeEditForm
+										shortcode={ this.shortcode }
+										attrs={ attrs }
+										values={ values }
+										onSize={ onSize }
+										setAttributes={ setAttributes } />
 								</form>
 							) }
 						</div>
@@ -115,62 +128,41 @@ class EditBlock extends Component {
 
 				// Or the preformatted shortcode text if no preview is available.
 				(
-					<code onFocus={ setFocus }>
-						{ content }
-					</code>
+					<div className="wp-block-shortcake-preview" key="content" style={ focus && { minHeight: this.state.minHeight } }>
+						<code
+							onFocus={ setFocus }
+							onBlur={ this.maybeUpdatePreview }
+							>
+							{ content }
+						</code>
+						{ focus && (
+							<form title={ `Edit ${label} post element` } className="wp-block-shortcode-edit-form">
+								<h4 className="shortcode-ui-block-editor-title">Edit {label} post element</h4>
+								<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
+								<ShortcodeEditForm
+									shortcode={ this.shortcode }
+									attrs={ attrs }
+									values={ values }
+									onSize={ onSize }
+									setAttributes={ setAttributes } />
+							</form>
+						) }
+					</div>
 				),
 
 			// Render inspector controls when block is focused.
 			focus && [
-				<InspectorControls>
+				<InspectorControls key="advanced-controls">
 					<BlockDescription>
 						<h4 className="shortcode-ui-inspector-controls-title">Edit {label} post element</h4>
 						<p className="shortcode-ui-inspector-controls-description">Shortcode attributes</p>
 					</BlockDescription>
 					<form className="shortcode-ui-block-inspector">
-						{ editForm }
 					</form>
 				</InspectorControls>
 			]
 		];
 	}
-
-	/**
-	 * Render a text input for an attribute value field.
-	 *
-	 * TODO: This should be moved to a different component so that we
-	 * can define multiple input types. Currently all attribute fields
-	 * are displayed as text inputs, no matter what field type was
-	 * registered for them.
-	 *
-	 * @param  {Object}            attribute  Attribute field as defined in shortcode UI.
-	 * @return {wp.blocks.element}            HTML for section with label, input, and description if available.
-	 */
-	renderTextField( attribute ) {
-		const { attr, label, description } = attribute;
-		const { attributes, setAttributes } = this.props;
-		const { shortcode_tag } = this.shortcode;
-		const value = attributes[ attr ] || '';
-
-		const updateValue = e => {
-			setAttributes( { [ attr ]: e.target.value } );
-		}
-
-		return (
-			<section key={ `shortcode-${shortcode_tag}-${attr}` } className='shortcode-ui-block-inspector-form-item'>
-				<label className='shortcode-ui-block-inspector-form-item-label'>{ label }</label>
-				<input className='shortcode-ui-block-inspector-form-item-input'
-					type='text'
-					name={ attr }
-					value={ value }
-					onChange={ updateValue }
-					/>
-				{ description.length && (
-					<span className='shortcode-ui-block-inspector-form-item-description'>{ description }</span>
-				) }
-			</section>
-		);
-	};
 }
 
 export default EditBlock;
