@@ -103,7 +103,7 @@ class EditBlock extends Component {
 
 				// Display the shortcode preview (if it's been fetched properly).
 				(
-					<div className="wp-block-shortcake-preview" key="preview" style={ focus && { minHeight: this.state.minHeight } }>
+					<div className="wp-block-shortcake-preview" key="preview" style={ focus ? { minHeight: this.state.minHeight } : {} }>
 						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
 						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) }
 							onClick={ setFocus }
@@ -128,7 +128,7 @@ class EditBlock extends Component {
 
 				// Or the preformatted shortcode text if no preview is available.
 				(
-					<div className="wp-block-shortcake-preview" key="content" style={ focus && { minHeight: this.state.minHeight } }>
+					<div className="wp-block-shortcake-preview" key="content" style={ focus ? { minHeight: this.state.minHeight } : {} }>
 						<code
 							onFocus={ setFocus }
 							onBlur={ this.maybeUpdatePreview }
