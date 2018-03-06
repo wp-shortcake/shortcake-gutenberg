@@ -5,6 +5,7 @@ import mapItemImage from './utils/mapItemImage';
 import EditBlock from './EditBlock';
 
 const { registerBlockType } = wp.blocks;
+const { RawHTML } = wp.element;
 
 /**
  * Register a Gutenberg block for a shortcode with UI.
@@ -47,7 +48,7 @@ const registerShortcodeBlock = function( shortcode ) {
 			edit: EditBlock.bind( null, shortcode ),
 
 			save( { attributes } ) {
-				return wp.shortcode.string( { tag: shortcode_tag, attrs: attributes } );
+				return RawHTML( { children: [ wp.shortcode.string( { tag: shortcode_tag, attrs: attributes } ) ] } );
 			}
 		}
 	);
