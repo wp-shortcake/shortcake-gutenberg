@@ -2,6 +2,7 @@
 import React from 'react';
 
 import Fetcher from './utils/Fetcher';
+import Sandbox from './utils/Sandbox';
 import ShortcodeEditForm from './ShortcodeEditForm';
 
 import './EditBlock.css'
@@ -83,8 +84,6 @@ class EditBlock extends Component {
 	}
 
 	render() {
-		const { SandBox } = wp.components;
-
 		const { attrs, label, shortcode_tag } = this.shortcode;
 		const { attributes: values, setAttributes, focus, setFocus } = this.props;
 		const { content, preview } = this.state;
@@ -104,7 +103,7 @@ class EditBlock extends Component {
 				// Display the shortcode preview (if it's been fetched properly).
 				(
 					<div className="wp-block-shortcake-preview" key="preview" style={ focus ? { minHeight: this.state.minHeight } : {} }>
-						<SandBox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
+						<Sandbox html={ preview } title={ `${label} shortcode preview` } type={ shortcode_tag } />
 						<div className={ "wp-block-shortcake-preview-overlay" + ( focus ? ' editing' : '' ) }
 							onClick={ setFocus }
 							onFocus={ setFocus }
